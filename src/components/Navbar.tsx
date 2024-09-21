@@ -88,14 +88,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, categories }) => {
 
 export const getServerSideProps = async () => {
   try {
-    // Fetch categories using fetch
     const response = await fetch("https://fakestoreapi.com/products/categories");
     const categories = await response.json();
 
     return {
       props: {
         categories,
-        cartCount: 0, // Replace with actual cart count logic if available
+        cartCount: 0,
       },
     };
   } catch (error) {
