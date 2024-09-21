@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useRouter } from "next/router"; // Next.js router
+import { useRouter } from "next/router";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
@@ -56,8 +55,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.params as { id: string };
 
   try {
-    const response = await axios.get(`https://fakestoreapi.com/products/${id}`);
-    const product = response.data;
+    const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const product = await response.json();
 
     return {
       props: {
@@ -66,6 +68,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
+    console.error("Error fetching product:", error);
     return {
       notFound: true,
     };

@@ -5,6 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
+import Product from "../pages/Product";
 
 interface ListProductValues {
   id: number;
@@ -20,7 +21,7 @@ interface ListProductValues {
 const ListProduct: React.FC<ListProductValues> = ({ id, title, price, image, onAddCart, onRemoveCart, inCart }) => {
   const router = useRouter();
   const handleNavigate = () => {
-    router.push(`/product/${id}`);
+    router.push(`/Product/${id}`);
   };
 
   return (

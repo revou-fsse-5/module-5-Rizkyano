@@ -2,8 +2,6 @@ import React from "react";
 import ListProduct from "../components/ListCard";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
-// import useFilterData from "../Context/useFilterData";
-import { useParams } from "react-router-dom";
 import { API_URL } from "../constants/Contsant";
 import { GetServerSideProps } from "next";
 
@@ -18,11 +16,13 @@ interface ProductValues {
 interface ProductProps {
   onAddCart: (id: number) => void;
   onRemoveCart: (id: number) => void;
-  cart: number[];
+  cart?: number[];
   products: ProductValues[];
 }
 
-const Product: React.FC<ProductProps> = ({ products, onAddCart, onRemoveCart, cart }) => {
+const Products: React.FC<ProductProps> = ({ products, onAddCart, onRemoveCart, cart = [] }) => {
+  console.log("Cart:", cart);
+
   return (
     <div className="p-6">
       <React.Fragment>
@@ -39,7 +39,7 @@ const Product: React.FC<ProductProps> = ({ products, onAddCart, onRemoveCart, ca
                 price={product.price}
                 onAddCart={() => onAddCart(product.id)}
                 onRemoveCart={() => onRemoveCart(product.id)}
-                inCart={cart.includes(product.id)}
+                inCart={Array.isArray(cart) && cart.includes(product.id)} // Cek apakah cart adalah array
               />
             ))}
           </div>
@@ -49,32 +49,32 @@ const Product: React.FC<ProductProps> = ({ products, onAddCart, onRemoveCart, ca
   );
 };
 
-export default Product;
+export default Products;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { category } = context.query;
   const endpoint = category ? `${API_URL}/category/${category}` : API_URL;
 
   try {
-    const response = await axios.get(endpoint);
+    const response = await fetch(endpoint);
 
-    if (!response.data) {
+    if (!response.ok) {
       throw new Error("Error while fetching data");
     }
 
+    const data = await response.json();
+
     return {
       props: {
-        products: response.data,
-        category: category || "",
+        products: data,
       },
     };
   } catch (error) {
-    console.error(error);
+    console.error("Error while fetching products:", error);
 
     return {
       props: {
         products: [],
-        category: category || "",
       },
     };
   }
